@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:login_flutter/app/login/login_controller.dart';
+import 'package:mobx/mobx.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -9,6 +12,10 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
+  final loginController = LoginController();
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +39,10 @@ class _LoginViewState extends State<LoginView> {
               passwordField(),
               SizedBox(height: 15),
               loginButtom(),
+              Observer(builder: (_) {
+                return Text(
+                    "${loginController.login.username} ${loginController.login.password}");
+              })
             ],
           ),
         ),
@@ -40,56 +51,72 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget usernameField() {
-    return TextFormField(
-      obscureText: false,
-      decoration: InputDecoration(
-        prefixIcon: Icon(Icons.person),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            color: Colors.black45,
-            width: 1,
+    return Observer(builder: (_) {
+      return TextFormField(
+        // controller: _usernameController,
+        obscureText: false,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.person),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              color: Colors.black45,
+              width: 1,
+            ),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            color: Colors.cyanAccent,
-            width: 2,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              color: Colors.cyanAccent,
+              width: 2,
+            ),
           ),
+          labelText: 'Usuário',
         ),
-        labelText: 'Usuário',
-      ),
-      validator: (value) {
-        null;
-      },
-    );
+        validator: (value) {
+          null;
+        },
+        onChanged: loginController.login.setUsername,
+      );
+    });
   }
 
   Widget passwordField() {
-    return TextFormField(
-      obscureText: true,
-      decoration: InputDecoration(
-        prefixIcon: Icon(Icons.security),
-        suffixIcon: Icon(Icons.visibility),
-        counter: TextButton(
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(16.0),
-            primary: Colors.black45,
-            textStyle: const TextStyle(fontSize: 16),
+    return Observer(builder: (_) {
+      return TextFormField(
+        // controller: _passwordController,
+        obscureText: !loginController.showPassword,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.security),
+          suffixIcon: IconButton(
+            icon: loginController.showPassword
+                ? Icon(Icons.visibility_off)
+                : Icon(Icons.visibility),
+            tooltip: 'Visualizar Senha',
+            onPressed: () {
+              loginController.toggleShowPassword();
+            },
           ),
-          onPressed: () {},
-          child: const Text('Esqueci a senha!'),
+          counter: TextButton(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.all(16.0),
+              primary: Colors.black45,
+              textStyle: const TextStyle(fontSize: 16),
+            ),
+            onPressed: () {},
+            child: const Text('Esqueci a senha!'),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          labelText: 'Senha',
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        labelText: 'Senha',
-      ),
-      validator: (value) {
-        null;
-      },
-    );
+        validator: (value) {
+          null;
+        },
+        onChanged: loginController.login.setPassword,
+      );
+    });
   }
 
   Widget loginButtom() {
