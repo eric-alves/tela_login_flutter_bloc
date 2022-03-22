@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:login_flutter/app/home/home_view.dart';
 import 'package:login_flutter/app/login/login_controller.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -12,19 +14,28 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
-  final loginController = LoginController();
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final loginController = Provider.of<LoginController>(context);
+
     return Scaffold(
-      body: loginForm(),
+      body: loginForm(context),
     );
   }
 
-  Widget loginForm() {
+  Widget loginForm(BuildContext context) {
+    final loginController = Provider.of<LoginController>(context);
+
     return Form(
       key: _formKey,
       child: Padding(
@@ -34,11 +45,11 @@ class _LoginViewState extends State<LoginView> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              usernameField(),
+              usernameField(context),
               SizedBox(height: 15),
-              passwordField(),
+              passwordField(context),
               SizedBox(height: 15),
-              loginButtom(),
+              loginButtom(context),
               Observer(builder: (_) {
                 return Text(
                     "${loginController.login.username} ${loginController.login.password}");
@@ -50,7 +61,9 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget usernameField() {
+  Widget usernameField(BuildContext context) {
+    final loginController = Provider.of<LoginController>(context);
+
     return Observer(builder: (_) {
       return TextFormField(
         // controller: _usernameController,
@@ -74,14 +87,16 @@ class _LoginViewState extends State<LoginView> {
           labelText: 'Usuário',
         ),
         validator: (value) {
-          null;
+          loginController.login.validateUsername();
         },
         onChanged: loginController.login.setUsername,
       );
     });
   }
 
-  Widget passwordField() {
+  Widget passwordField(BuildContext context) {
+    final loginController = Provider.of<LoginController>(context);
+
     return Observer(builder: (_) {
       return TextFormField(
         // controller: _passwordController,
@@ -112,28 +127,36 @@ class _LoginViewState extends State<LoginView> {
           labelText: 'Senha',
         ),
         validator: (value) {
-          null;
+          loginController.login.validatePassword();
         },
         onChanged: loginController.login.setPassword,
       );
     });
   }
 
-  Widget loginButtom() {
-    return ElevatedButton(
-      onPressed: () {},
-      child: SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: Center(child: Text('Entrar')),
-      ),
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
+  Widget loginButtom(BuildContext context) {
+    final loginController = Provider.of<LoginController>(context);
+
+    return Observer(builder: (_) {
+      return ElevatedButton(
+        onPressed: loginController.login.isValid
+            ? () {
+                Navigator.of(context).pushNamed('/home-page');
+              }
+            : null,
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: Center(child: Text('Entrar')),
+        ),
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
