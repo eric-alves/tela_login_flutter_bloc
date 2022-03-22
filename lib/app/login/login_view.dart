@@ -70,21 +70,11 @@ class _LoginViewState extends State<LoginView> {
         obscureText: false,
         decoration: InputDecoration(
           prefixIcon: Icon(Icons.person),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide(
-              color: Colors.black45,
-              width: 1,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide(
-              color: Colors.cyanAccent,
-              width: 2,
-            ),
-          ),
+          errorText: loginController.login.validateUsername(),
           labelText: 'Usuário',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
         ),
         validator: (value) {
           loginController.login.validateUsername();
@@ -102,30 +92,30 @@ class _LoginViewState extends State<LoginView> {
         // controller: _passwordController,
         obscureText: !loginController.showPassword,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.security),
-          suffixIcon: IconButton(
-            icon: loginController.showPassword
-                ? Icon(Icons.visibility_off)
-                : Icon(Icons.visibility),
-            tooltip: 'Visualizar Senha',
-            onPressed: () {
-              loginController.toggleShowPassword();
-            },
-          ),
-          counter: TextButton(
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.all(16.0),
-              primary: Colors.black45,
-              textStyle: const TextStyle(fontSize: 16),
+            prefixIcon: Icon(Icons.security),
+            suffixIcon: IconButton(
+              icon: loginController.showPassword
+                  ? Icon(Icons.visibility_off)
+                  : Icon(Icons.visibility),
+              tooltip: 'Visualizar Senha',
+              onPressed: () {
+                loginController.toggleShowPassword();
+              },
             ),
-            onPressed: () {},
-            child: const Text('Esqueci a senha!'),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          labelText: 'Senha',
-        ),
+            counter: TextButton(
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.all(16.0),
+                primary: Colors.black45,
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+              onPressed: () {},
+              child: const Text('Esqueci a senha!'),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            labelText: 'Senha',
+            errorText: loginController.login.validatePassword()),
         validator: (value) {
           loginController.login.validatePassword();
         },
